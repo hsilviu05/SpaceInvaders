@@ -1,0 +1,9 @@
+{
+  "name": "space-invaders",
+  "version-string": "1.0.0",
+  "builtin-baseline": "365f6444ab40ee87c73c947b475b3a267b3cb77c",
+  "dependencies": [
+    "sfml",
+    "gtest"
+  ]
+}

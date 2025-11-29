@@ -1,0 +1,101 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Build: SpaceInvaders Game (Mac)",
+      "type": "shell",
+      "command": "clang++",
+      "args": [
+        "-std=c++20",
+        "-g",
+        "-I", "${workspaceFolder}/GameUI/include",
+        "-I", "${workspaceFolder}/GameLogic/include",
+        "-I", "/opt/homebrew/include",
+        "${workspaceFolder}/GameUI/src/main.cpp",
+        "${workspaceFolder}/GameUI/src/Game.cpp",
+        "${workspaceFolder}/GameUI/src/Renderer.cpp",
+        "${workspaceFolder}/GameUI/src/InputHandler.cpp",
+        "${workspaceFolder}/GameLogic/src/Alien.cpp",
+        "${workspaceFolder}/GameLogic/src/Bullet.cpp",
+        "${workspaceFolder}/GameLogic/src/Entity.cpp",
+        "${workspaceFolder}/GameLogic/src/GameState.cpp",
+        "${workspaceFolder}/GameLogic/src/Player.cpp",
+        "${workspaceFolder}/GameLogic/src/ScoreManager.cpp",
+        "-L", "/opt/homebrew/lib",
+        "-lsfml-graphics",
+        "-lsfml-window",
+        "-lsfml-system",
+        "-o", "${workspaceFolder}/GameUI/space_invaders"
+      ],
+      "group": { "kind": "build", "isDefault": true },
+      "problemMatcher": [ "$gcc" ],
+      "presentation": { "reveal": "always", "panel": "shared" }
+    },
+    {
+      "label": "Util: Copy Assets",
+      "type": "shell",
+      "command": "rsync -av --delete '${workspaceFolder}/Assets/' '${workspaceFolder}/GameUI/Assets/'",
+      "problemMatcher": [],
+      "presentation": { "reveal": "always", "panel": "shared" }
+    },
+    {
+      "label": "Run: SpaceInvaders Game",
+      "type": "shell",
+      "command": "${workspaceFolder}/GameUI/space_invaders",
+      "dependsOn": [ "Build: SpaceInvaders Game (Mac)" ],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "problemMatcher": [],
+      "presentation": { "reveal": "always", "panel": "shared", "focus": true }
+    },
+    {
+      "label": "Build: Tests (Mac)",
+      "type": "shell",
+      "command": "clang++",
+      "args": [
+        "-std=c++20",
+        "-g",
+        "-I", "${workspaceFolder}/GameLogic/include",
+        "-I", "/opt/homebrew/include",
+        "${workspaceFolder}/GameTests/src/TestMain.cpp",
+        "${workspaceFolder}/GameTests/src/PlayerTests.cpp",
+        "${workspaceFolder}/GameTests/src/AlienTest.cpp",
+        "${workspaceFolder}/GameTests/src/BulletTest.cpp",
+        "${workspaceFolder}/GameTests/src/EntityTest.cpp",
+        "${workspaceFolder}/GameTests/src/GameStateTest.cpp",
+        "${workspaceFolder}/GameTests/src/ScoreManagerTest.cpp",
+        "${workspaceFolder}/GameLogic/src/Alien.cpp",
+        "${workspaceFolder}/GameLogic/src/Bullet.cpp",
+        "${workspaceFolder}/GameLogic/src/Entity.cpp",
+        "${workspaceFolder}/GameLogic/src/GameState.cpp",
+        "${workspaceFolder}/GameLogic/src/Player.cpp",
+        "${workspaceFolder}/GameLogic/src/ScoreManager.cpp",
+        "-L", "/opt/homebrew/lib",
+        "-lgtest",
+        "-lgtest_main",
+        "-pthread",
+        "-o", "${workspaceFolder}/GameTests/run_tests"
+      ],
+      "group": "build",
+      "problemMatcher": [ "$gcc" ],
+      "presentation": { "reveal": "always", "panel": "shared" }
+    },
+    {
+      "label": "Run: Tests",
+      "type": "shell",
+      "command": "${workspaceFolder}/GameTests/run_tests",
+      "dependsOn": [ "Build: Tests (Mac)" ],
+      "group": "test",
+      "problemMatcher": [],
+      "presentation": { "reveal": "always", "panel": "shared", "focus": true }
+    },
+    {
+      "label": "Util: Clean All",
+      "type": "shell",
+      "command": "rm -rf '${workspaceFolder}/GameUI/space_invaders' '${workspaceFolder}/GameTests/run_tests' '${workspaceFolder}/GameUI/space_invaders.dSYM' '${workspaceFolder}/GameTests/run_tests.dSYM'",
+      "problemMatcher": [],
+      "presentation": { "reveal": "always", "panel": "shared" }
+    }
+  ]
+}
