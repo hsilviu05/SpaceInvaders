@@ -424,6 +424,16 @@ compile_commands.json
 Makefile
 install_manifest.txt
 
+# Mac native builds
+GameUI/space_invaders
+GameTests/run_tests
+
+# VS Code C/C++ IntelliSense
+.vscode/c_cpp_properties.json
+
+# Assets symlink
+Assets
+
 # Misc
 *.tmp
 *.bak
