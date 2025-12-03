@@ -2,23 +2,30 @@
 
 namespace GameUI
 {
-void InputHandler::handleInput(GameLogic::GameState& gameState, float deltaTime)
+InputHandler::InputHandler() : m_doNothingCommand{std::make_unique<GameLogic::DoNothingCommand>()}
 {
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::A) || sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Left))
-    {
-        gameState.handlePlayerMoveLeft(deltaTime);
-    }
+    // Set up default key bindings
+    bindKey(sf::Keyboard::Key::Left, std::make_unique<GameLogic::MoveLeftCommand>());
+    bindKey(sf::Keyboard::Key::A, std::make_unique<GameLogic::MoveLeftCommand>());
+    bindKey(sf::Keyboard::Key::Right, std::make_unique<GameLogic::MoveRightCommand>());
+    bindKey(sf::Keyboard::Key::D, std::make_unique<GameLogic::MoveRightCommand>());
+    bindKey(sf::Keyboard::Key::Space, std::make_unique<GameLogic::ShootCommand>());
+}
 
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::D) || sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Right))
-    {
-        gameState.handlePlayerMoveRight(deltaTime);
-    }
+void InputHandler::bindKey(sf::Keyboard::Key key, std::unique_ptr<GameLogic::ICommand> command)
+{
+    m_keyBindings[key] = std::move(command);
+}
 
-    bool spacePressed = sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Space);
-    if (spacePressed && !m_spaceWasPressed)
+GameLogic::ICommand* InputHandler::handleInput() const
+{
+    for (const auto& [key, command] : m_keyBindings)
     {
-        gameState.handlePlayerShoot();
+        if (sf::Keyboard::isKeyPressed(key))
+        {
+            return command.get();
+        }
     }
-    m_spaceWasPressed = spacePressed;
+    return m_doNothingCommand.get();
 }
 } // namespace GameUI

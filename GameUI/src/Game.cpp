@@ -69,22 +69,24 @@ void Game::processEvents()
 
 void Game::update(float deltaTime)
 {
-    m_renderer.updateBackground(deltaTime);
-
     if (m_gameStatus == GameStatus::Playing)
     {
-        if (!m_gameState.isGameOver() && !m_gameState.isGameWon())
+        // Handle input using Command Pattern
+        GameLogic::ICommand* command = m_inputHandler.handleInput();
+        if (command)
         {
-            m_inputHandler.handleInput(m_gameState, deltaTime);
-            m_gameState.update(deltaTime);
+            command->execute(m_gameState, deltaTime);
+        }
+
+        m_gameState.update(deltaTime);
+
+        if (m_gameState.isGameOver())
+        {
+            m_gameStatus = GameStatus::GameOver;
         }
         else if (m_gameState.isGameWon())
         {
             m_gameStatus = GameStatus::YouWin;
-        }
-        else
-        {
-            m_gameStatus = GameStatus::GameOver;
         }
     }
 }
