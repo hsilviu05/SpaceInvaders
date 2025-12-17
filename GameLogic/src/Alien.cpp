@@ -1,5 +1,4 @@
 #include "Alien.h"
-
 #include "GameConstants.h"
 
 namespace GameLogic
@@ -14,9 +13,9 @@ void Alien::moveDown(float amount)
     m_position.y += amount;
 }
 
-void Alien::moveHorizontal(float direction, float deltaTime)
+void Alien::moveHorizontal(float direction, float modifier, float deltaTime)
 {
-    m_position.x += direction * m_speed * deltaTime;
+    m_position.x += direction * (m_speed*modifier) *deltaTime;
 }
 
 void Alien::update(float deltaTime)

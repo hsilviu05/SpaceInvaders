@@ -1,7 +1,6 @@
 #include "GameState.h"
 
 #include "GameConstants.h"
-
 #include <algorithm>
 
 namespace GameLogic
@@ -10,7 +9,7 @@ GameState::GameState()
     : m_player{Vector2D{GameConstants::PLAYER_START_X, GameConstants::PLAYER_START_Y},
                Vector2D{GameConstants::PLAYER_WIDTH, GameConstants::PLAYER_HEIGHT}},
       m_scoreManager{std::make_unique<ScoreManager>()}, m_gameOver{false}, m_gameWon{false},
-      m_alienDirection{GameConstants::DIRECTION_RIGHT}, m_alienMoveTimer{0.f}
+      m_alienDirection{GameConstants::DIRECTION_RIGHT}
 {
     initializeAliens();
 }
@@ -74,47 +73,54 @@ void GameState::update(float deltaTime)
     }
 }
 
+float invertMapRange(float value, float fromHigh, float fromLow, float toLow, float toHigh)
+{
+    float invertedValue = fromHigh - value;
+
+    float fromRange = fromHigh - fromLow;
+    float toRange = toHigh - toLow;
+    float scaledValue = invertedValue / fromRange;
+    return toLow + (scaledValue * toRange);
+}
+
 void GameState::updateAlienFormation(float deltaTime)
 {
-    m_alienMoveTimer += deltaTime;
-
-    if (m_alienMoveTimer >= GameConstants::ALIEN_MOVE_INTERVAL)
+    // Check if any alien hits the edge
+    bool hitEdge = false;
+    for (const auto& alien : m_aliens)
     {
-        m_alienMoveTimer = 0.f;
+        if (!alien.isActive())
+            continue;
 
-        // Check if any alien hits the edge
-        bool hitEdge = false;
-        for (const auto& alien : m_aliens)
+        float nextX = alien.getPosition().x + m_alienDirection * GameConstants::ALIEN_HORIZONTAL_STEP;
+        if (nextX < GameConstants::SCREEN_LEFT || nextX + alien.getSize().x > GameConstants::SCREEN_WIDTH)
         {
-            if (!alien.isActive())
-                continue;
-
-            float nextX = alien.getPosition().x + m_alienDirection * GameConstants::ALIEN_HORIZONTAL_STEP;
-            if (nextX < GameConstants::SCREEN_LEFT || nextX + alien.getSize().x > GameConstants::SCREEN_WIDTH)
-            {
-                hitEdge = true;
-                break;
-            }
+            hitEdge = true;
+            break;
         }
+    }
 
-        if (hitEdge)
+    if (hitEdge)
+    {
+        // Move down and reverse direction
+        for (auto& alien : m_aliens)
         {
-            // Move down and reverse direction
-            for (auto& alien : m_aliens)
-            {
-                if (alien.isActive())
-                    alien.moveDown(GameConstants::ALIEN_VERTICAL_STEP);
-            }
-            m_alienDirection *= GameConstants::DIRECTION_LEFT;
+            if (alien.isActive())
+                alien.moveDown(GameConstants::ALIEN_VERTICAL_STEP);
         }
-        else
+        m_alienDirection *= GameConstants::DIRECTION_LEFT;
+    }
+    else
+    {
+        float activeAliens = std::count_if(m_aliens.begin(), m_aliens.end(), [](const Alien& a) { return a.isActive(); });
+
+        float mappedValue =
+            invertMapRange(activeAliens, GameConstants::ALIEN_ROWS * GameConstants::ALIEN_COLUMNS, 0.0, 1.0, 15.0);
+
+        for (auto& alien : m_aliens)
         {
-            // Move horizontally
-            for (auto& alien : m_aliens)
-            {
-                if (alien.isActive())
-                    alien.moveHorizontal(m_alienDirection, GameConstants::ALIEN_HORIZONTAL_SPEED_MULTIPLIER);
-            }
+            if (alien.isActive())
+                alien.moveHorizontal(m_alienDirection, mappedValue, GameConstants::ALIEN_HORIZONTAL_SPEED_MULTIPLIER);
         }
     }
 }
@@ -190,7 +196,6 @@ void GameState::reset()
     m_gameOver = false;
     m_gameWon = false;
     m_alienDirection = GameConstants::DIRECTION_RIGHT;
-    m_alienMoveTimer = 0.f;
 }
 
 Player& GameState::getPlayer()

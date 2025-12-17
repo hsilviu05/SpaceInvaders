@@ -48,6 +48,5 @@ private:
     bool m_gameWon;
 
     float m_alienDirection;
-    float m_alienMoveTimer;
 };
 } // namespace GameLogic

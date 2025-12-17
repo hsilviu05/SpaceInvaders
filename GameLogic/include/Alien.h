@@ -15,7 +15,7 @@ public:
     Alien(Vector2D position, Vector2D size);
 
     void moveDown(float amount);
-    void moveHorizontal(float direction, float deltaTime);
+    void moveHorizontal(float direction, float modifier, float deltaTime);
     void update(float deltaTime) override;
 
     void die();

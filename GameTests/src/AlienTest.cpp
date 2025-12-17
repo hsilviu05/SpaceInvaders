@@ -63,7 +63,7 @@ TEST_F(AlienTest, MoveHorizontalCalculatesCorrectly)
     float deltaTime = 0.5f;
     float currentSpeed = alien->getSpeed();
 
-    alien->moveHorizontal(direction, deltaTime);
+    alien->moveHorizontal(direction, 1, deltaTime);
 
     float expectedX = 100.f + (direction * currentSpeed * deltaTime);
     EXPECT_FLOAT_EQ(alien->getPosition().x, expectedX);
@@ -79,7 +79,7 @@ TEST_F(AlienTest, SetSpeedUpdatesMovementLogic)
     float direction = -1.f;
     float deltaTime = 1.0f;
 
-    alien->moveHorizontal(direction, deltaTime);
+    alien->moveHorizontal(direction, 1, deltaTime);
 
     float expectedX = 100.f - 500.f;
     EXPECT_FLOAT_EQ(alien->getPosition().x, expectedX);
